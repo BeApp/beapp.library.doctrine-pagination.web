@@ -1,0 +1,13 @@
+# OS junk files
+.DS_Store
+[Tt]humbs.db
+
+# Temp files
+*~
+
+#IntelliJ IDEA
+.idea
+*.iml
+
+#Composer
+vendor

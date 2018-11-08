@@ -1,6 +1,6 @@
 {
     "name": "beapp/doctrine-pagination",
-    "description": "Doctrine's pagination library",
+    "description": "Simple Doctrine pagination library for multiple usages",
     "type": "library",
     "license": "MIT",
     "keywords": [

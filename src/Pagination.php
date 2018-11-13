@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Doctrine\Pagination;
+namespace Beapp\Doctrine\Pagination;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

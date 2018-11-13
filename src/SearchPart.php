@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Doctrine\Pagination;
+namespace Beapp\Doctrine\Pagination;
 
 class SearchPart
 {

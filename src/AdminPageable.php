@@ -26,12 +26,10 @@ class AdminPageable extends Pageable
         $search = $request->get('search', []);
 
         if (is_string($search)) {
-            $search = ['value' => $search];
-        }
-
-        // If the search value is empty the var search is empty too
-        if (!empty($search) && strlen($search['value']) == 0) {
-            $search = [];
+            $search = [
+                'value' => $search,
+                'regex' => false
+            ];
         }
 
         // Sorting
@@ -46,29 +44,12 @@ class AdminPageable extends Pageable
 
         // Filtering
         $searchExprs = [];
-        if (!empty($search)) {
-            // Global filtering
-            foreach ($columns as $column) {
-
-                if ($column['searchable'] && array_key_exists($column['data'], $mapping) && !empty($column['search']['value'])) {
-                    array_push(
-                        $searchExprs,
-                        new SearchPart($mapping[$column['data']], $search['value'], true)
-                    );    // TODO Configure all jquery datatables in order to use regexp with search
-//                array_push($searchExprs, new SearchPart($mapping[$column['data']], $search['value'], $search['regex']));
-                }
-            }
-        } else {
-            // Per-column Filtering
-            foreach ($columns as $column) {
-                $search = $column['search'];
-
-                if ($column['searchable'] && array_key_exists($column['data'], $mapping) && !empty($search['value'])) {
-                    array_push(
-                        $searchExprs,
-                        new SearchPart($mapping[$column['data']], $search['value'], true)
-                    );    // TODO Configure all jquery datatables in order to use regexp with search
-//                array_push($searchExprs, new SearchPart($mapping[$column['data']], $search['value'], $search['regex']));
+        foreach ($columns as $column) {
+            if ($column['searchable'] && array_key_exists($column['data'], $mapping)) {
+                if (!empty($search['value'])) {
+                    array_push($searchExprs, new SearchPart($mapping[$column['data']], $search['value'], boolval($search['regex'])));
+                } elseif (!empty($column['search']['value'])) {
+                    array_push($searchExprs, new SearchPart($mapping[$column['data']], $column['search']['value'], boolval($column['search']['regex'])));
                 }
             }
         }

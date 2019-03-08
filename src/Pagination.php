@@ -12,11 +12,14 @@ use Doctrine\ORM\Tools\Pagination\CountOutputWalker;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-class Pagination extends Paginator
+class Pagination
 {
 
+    /** @var Paginator */
+    private $paginator;
+
     /** @var QueryBuilder */
-    private $originalQueryBuilder;
+    private $originalQuery;
 
     /** @var int unfilteredCount */
     private $unfilteredCount;
@@ -26,10 +29,11 @@ class Pagination extends Paginator
      * @param QueryBuilder $queryBuilder
      * @param Pageable|null $pageable
      * @param bool $fetchJoinCollection
+     * @param bool|null $useOutputWalkers
      */
-    public function __construct(QueryBuilder $queryBuilder, Pageable $pageable = null, bool $fetchJoinCollection = true)
+    public function __construct(QueryBuilder $queryBuilder, ?Pageable $pageable = null, bool $fetchJoinCollection = true, ?bool $useOutputWalkers = null)
     {
-        $this->originalQueryBuilder = $this->cloneQuery($queryBuilder->getQuery());
+        $this->originalQuery = $this->cloneQuery($queryBuilder->getQuery());
 
         if (!is_null($pageable)) {
             $queryBuilder->setFirstResult($pageable->getPage() * $pageable->getSize());
@@ -60,7 +64,24 @@ class Pagination extends Paginator
             }
         }
 
-        parent::__construct($queryBuilder, $fetchJoinCollection);
+        $this->paginator = new Paginator($queryBuilder, $fetchJoinCollection);
+        $this->paginator->setUseOutputWalkers($useOutputWalkers);
+    }
+
+    /**
+     * @return Paginator
+     */
+    public function getPaginator(): Paginator
+    {
+        return $this->paginator;
+    }
+
+    /**
+     * @return Query
+     */
+    public function getQuery(): Query
+    {
+        return $this->paginator->getQuery();
     }
 
     /**
@@ -68,7 +89,23 @@ class Pagination extends Paginator
      */
     public function getCollection(): Collection
     {
-        return new ArrayCollection($this->getIterator()->getArrayCopy());
+        return new ArrayCollection($this->paginator->getIterator()->getArrayCopy());
+    }
+
+    /**
+     * @return \Traversable
+     */
+    public function getIterator(): \Traversable
+    {
+        return $this->paginator->getIterator();
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->paginator->count();
     }
 
     /**
@@ -79,7 +116,7 @@ class Pagination extends Paginator
      */
     public function setFirstResult($firstResult): self
     {
-        $this->getQuery()->setFirstResult($firstResult);
+        $this->paginator->getQuery()->setFirstResult($firstResult);
 
         return $this;
     }
@@ -92,7 +129,21 @@ class Pagination extends Paginator
      */
     public function setMaxResults($maxResults): self
     {
-        $this->getQuery()->setMaxResults($maxResults);
+        $this->paginator->getQuery()->setMaxResults($maxResults);
+
+        return $this;
+    }
+
+    /**
+     * Sets whether the paginator will use an output walker.
+     *
+     * @param bool|null $useOutputWalkers
+     *
+     * @return $this
+     */
+    public function setUseOutputWalkers($useOutputWalkers)
+    {
+        $this->paginator->setUseOutputWalkers($useOutputWalkers);
 
         return $this;
     }
@@ -117,7 +168,7 @@ class Pagination extends Paginator
     }
 
     /**
-     * Fork of {@code getCountQuery()} to count all data based on the origin query (without filtering nor pagination)
+     * Fork of {@code getCountQuery()} to count all data based on the original query (without filtering nor pagination)
      *
      * @return \Doctrine\ORM\Query|Query
      * @throws \Doctrine\DBAL\DBALException
@@ -125,13 +176,13 @@ class Pagination extends Paginator
     private function getUnfilteredCountQuery(): Query
     {
         /* @var $countQuery Query */
-        $countQuery = $this->cloneQuery($this->originalQueryBuilder);
+        $countQuery = $this->cloneQuery($this->originalQuery);
 
         if (!$countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
             $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
         }
 
-        $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
+        $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform();
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');

@@ -57,16 +57,6 @@ class AdminPageable extends Pageable
         return new self($page, $length, $orderExprs, $searchExprs);
     }
 
-    public static function fromExportJqueryDatatablesRequest(Request $request, array $mapping): self
-    {
-        $request->query->set('start', 0);
-
-        // @TODO: Maybe it's better to set the length to null in order to get all the values in the list
-        $request->query->set('length', 9999);
-
-        return self::fromJqueryDatatablesRequest($request, $mapping);
-    }
-
     /**
      * @param Request $request
      * @return AdminPageable

@@ -11,13 +11,15 @@ abstract class PaginationRepository extends EntityRepository
 
     /**
      * @param Pageable|null $pageable
-     * @param bool $fetchJoinCollection
-     * @param bool|null $useOutputWalkers
+     * @param bool          $fetchJoinCollection
+     * @param bool|null     $useOutputWalkers
+     * @param string        $entityAlias
+     *
      * @return Pagination
      */
-    public function findAllPaginated(?Pageable $pageable, bool $fetchJoinCollection = true, ?bool $useOutputWalkers = null): Pagination
+    public function findAllPaginated(?Pageable $pageable, bool $fetchJoinCollection = true, ?bool $useOutputWalkers = null, $entityAlias = 'e'): Pagination
     {
-        return new Pagination($this->createQueryBuilder('e'), $pageable, $fetchJoinCollection, $useOutputWalkers);
+        return new Pagination($this->createQueryBuilder($entityAlias), $pageable, $fetchJoinCollection, $useOutputWalkers);
     }
 
 }

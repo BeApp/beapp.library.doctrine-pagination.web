@@ -9,22 +9,26 @@ class ApiPageable extends Pageable
 {
     /**
      * @param Request $request
-     * @param string $pageKey
-     * @param string $limitKey
-     * @param string $sortKey
-     * @param string $directionKey
+     * @param string  $pageKey
+     * @param string  $limitKey
+     * @param string  $sortKey
+     * @param string  $directionKey
+     * @param array   $sortMapping
+     *
      * @return ApiPageable
      */
-    public static function fromRequest(Request $request, string $pageKey = 'page', string $limitKey = 'limit', string $sortKey = 'sort', string $directionKey = 'direction'): self
+    public static function fromRequest(Request $request, string $pageKey = 'page', string $limitKey = 'limit', string $sortKey = 'sort', string $directionKey = 'direction', $sortMapping = []): self
     {
         $orders = [];
-        if ($request->get($sortKey)) {
-            $order = strtoupper($request->get($directionKey, self::ASC));
-            if ($order !== 'ASC' && $order !== 'DESC') {
-                $order = 'ASC';
-            }
+        if ($sortField = $request->get($sortKey)) {
+            if (array_key_exists($sortField, $sortMapping)) {
+                $order = strtoupper($request->get($directionKey, self::ASC));
+                if ($order !== 'ASC' && $order !== 'DESC') {
+                    $order = 'ASC';
+                }
 
-            $orders[] = new OrderBy($request->get($sortKey), $order);
+                $orders[] = new OrderBy($sortMapping[$sortField], $order);
+            }
         }
 
         return new self(

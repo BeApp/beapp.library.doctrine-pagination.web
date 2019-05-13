@@ -4,7 +4,7 @@ namespace Beapp\Doctrine\Pagination;
 
 use Doctrine\ORM\Query\Expr\OrderBy;
 
-abstract class Pageable
+class Pageable
 {
     const ASC = 'ASC';
 

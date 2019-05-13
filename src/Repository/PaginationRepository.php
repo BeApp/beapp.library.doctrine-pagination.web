@@ -3,7 +3,7 @@
 namespace Beapp\Doctrine\Pagination\Repository;
 
 use Beapp\Doctrine\Pagination\Pageable;
-use Beapp\Doctrine\Pagination\Pagination;
+use Beapp\Doctrine\Pagination\DoctrinePagination;
 use Doctrine\ORM\EntityRepository;
 
 abstract class PaginationRepository extends EntityRepository
@@ -15,11 +15,11 @@ abstract class PaginationRepository extends EntityRepository
      * @param bool|null     $useOutputWalkers
      * @param string        $entityAlias
      *
-     * @return Pagination
+     * @return DoctrinePagination
      */
-    public function findAllPaginated(?Pageable $pageable, bool $fetchJoinCollection = true, ?bool $useOutputWalkers = null, $entityAlias = 'e'): Pagination
+    public function findAllPaginated(?Pageable $pageable, bool $fetchJoinCollection = true, ?bool $useOutputWalkers = null, $entityAlias = 'e'): DoctrinePagination
     {
-        return new Pagination($this->createQueryBuilder($entityAlias), $pageable, $fetchJoinCollection, $useOutputWalkers);
+        return new DoctrinePagination($this->createQueryBuilder($entityAlias), $pageable, $fetchJoinCollection, $useOutputWalkers);
     }
 
 }

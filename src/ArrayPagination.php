@@ -71,7 +71,8 @@ class ArrayPagination implements PaginationInterface
                 $values = array_values(array_filter($values, function ($value) {
                     foreach ($this->pageable->getSearch() as $search) {
                         if ($search->isRegex()) {
-                            if (preg_match($search->getValue(), $this->entryField($value, $search->getField()))) {
+                            $pattern = '#' . str_replace('#', '\#', $search->getValue()) . '#';
+                            if (preg_match($pattern, $this->entryField($value, $search->getField()))) {
                                 return true;
                             }
                         } else {

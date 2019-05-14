@@ -26,12 +26,15 @@ class ArrayPagination implements PaginationInterface
 
     public function getIterator(): Iterator
     {
-        return new ArrayIterator($this->getFilteredValues());
+        return new ArrayIterator($this->getCollection()->toArray());
     }
 
     public function getCollection(): Collection
     {
-        return new ArrayCollection($this->getFilteredValues());
+        $values = $this->getFilteredValues();
+        $values = array_slice($values, $this->pageable->getPage() * $this->pageable->getSize(), $this->pageable->getSize());
+
+        return new ArrayCollection($values);
     }
 
     public function count(): int
@@ -84,9 +87,6 @@ class ArrayPagination implements PaginationInterface
                     return false;
                 }));
             }
-
-            // Slice values
-            $values = array_slice($values, $this->pageable->getPage() * $this->pageable->getSize(), $this->pageable->getSize());
 
             $this->filteredValues = $values;
         }

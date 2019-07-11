@@ -15,10 +15,10 @@ class ArrayPagination implements PaginationInterface
     private $values;
     /** @var array|null */
     private $filteredValues;
-    /** @var Pageable */
+    /** @var Pageable|null */
     private $pageable;
 
-    public function __construct(array $values, Pageable $pageable = null)
+    public function __construct(array $values, ?Pageable $pageable = null)
     {
         $this->values = $values;
         $this->pageable = $pageable;
@@ -44,13 +44,21 @@ class ArrayPagination implements PaginationInterface
         return count($this->values);
     }
 
-    private function getFilteredAndSlicedValues()
+    public function getFilteredAndSlicedValues()
     {
+        if ($this->pageable == null) {
+            return $this->getFilteredValues();
+        }
+
         return array_slice($this->getFilteredValues(), $this->pageable->getPage() * $this->pageable->getSize(), $this->pageable->getSize());
     }
 
-    private function getFilteredValues()
+    protected function getFilteredValues()
     {
+        if ($this->pageable == null) {
+            return $this->values;
+        }
+
         if ($this->filteredValues == null) {
             $values = $this->values;
 

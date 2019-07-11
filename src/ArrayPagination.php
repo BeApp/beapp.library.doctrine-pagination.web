@@ -26,15 +26,12 @@ class ArrayPagination implements PaginationInterface
 
     public function getIterator(): Iterator
     {
-        return new ArrayIterator($this->getCollection()->toArray());
+        return new ArrayIterator($this->getFilteredAndSlicedValues());
     }
 
     public function getCollection(): Collection
     {
-        $values = $this->getFilteredValues();
-        $values = array_slice($values, $this->pageable->getPage() * $this->pageable->getSize(), $this->pageable->getSize());
-
-        return new ArrayCollection($values);
+        return new ArrayCollection($this->getFilteredAndSlicedValues());
     }
 
     public function count(): int
@@ -45,6 +42,11 @@ class ArrayPagination implements PaginationInterface
     public function getUnfilteredCount(): int
     {
         return count($this->values);
+    }
+
+    private function getFilteredAndSlicedValues()
+    {
+        return array_slice($this->getFilteredValues(), $this->pageable->getPage() * $this->pageable->getSize(), $this->pageable->getSize());
     }
 
     private function getFilteredValues()

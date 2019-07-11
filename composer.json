@@ -18,13 +18,18 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
-    "doctrine/orm": "^2.6",
-    "symfony/http-foundation": "^3.0||^4.0"
+      "php": ">=7.1",
+      "doctrine/orm": "^2.6",
+      "symfony/http-foundation": "^3.0||^4.0"
   },
   "autoload": {
     "psr-4": {
       "Beapp\\Doctrine\\Pagination\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Beapp\\Doctrine\\Pagination\\": "tests"
     }
   },
   "extra": {
@@ -33,7 +38,8 @@
     }
   },
   "require-dev": {
-    "friendsofsymfony/rest-bundle": "^2.5"
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "phpunit/phpunit": "8.2.4"
   },
   "suggest": {
     "friendsofsymfony/rest-bundle": "^2.5"

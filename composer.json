@@ -3,7 +3,7 @@
   "description": "Simple Doctrine pagination library for multiple usages",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "keywords": [
     "doctrine",
     "pagination",
